@@ -4,18 +4,23 @@
 # name of the character.
 
 define narrator = Character("Narrator")
-define salesman = Character("Salesman", color="#00cc00")
+define guide = Character("Scam awareness guy", color="#ffe600")
 
 screen buttons():
     imagebutton:
-        xalign 0.2
+        xalign 0.1
         yalign 0.5
-        auto "button1_%s.png" action [ToggleScreen("buttons"), Jump("begin")]
+        auto "door_scam_button_%s.png" action [ToggleScreen("buttons"), Jump("door_scam_1_start")]
 
     imagebutton:
-        xalign 0.8
+        xalign 0.5
         yalign 0.5
-        auto "button2_%s.png" action [ToggleScreen("buttons"), Jump("begin")]
+        auto "message_scam_button_%s.png" action [ToggleScreen("buttons"), Jump("message_scam_1_start")]
+
+    imagebutton:
+        xalign 0.9
+        yalign 0.5
+        auto "phone_scam_button_%s.png" action [ToggleScreen("buttons"), Jump("phone_scam_1_start")]
 
 # The game starts here.
 
@@ -33,6 +38,138 @@ label start:
     # directory.
 
     # These display lines of dialogue.
+
+
+
+
+label message_scam_1_start:
+
+    narrator "You are sitting in your living room"
+
+    scene bg living_room
+    with fade
+
+    narrator "You check your messages"
+
+    scene bg message_scam_1
+    with dissolve
+    narrator "You received a message from an unknown number."
+
+    menu:
+        narrator "You..."
+
+        "Block the number":
+            jump message_scam_1_success
+
+        "Click the link":
+            jump message_scam_1_fail
+
+label message_scam_1_success:
+    scene bg living_room
+    with dissolve
+
+    narrator "You block the number."
+    scene bg living_room_guide
+    with dissolve
+
+    guide "Hey, you did well blocking that number!"
+    
+
+    guide "Never trust links that don't contain well-known names such as the Swiss Post, and watch for the spelling"
+
+    guide "Especially if you didn't order any package or the tracking number does not match"
+
+    jump message_scam_2_start
+
+
+label message_scam_1_fail:
+
+    scene bg living_room
+    with dissolve
+
+    narrator "You click the link, and go through the menus on the portal that opens"
+    narrator "You realise that the delivery address is wrong, and that you have to pay a fee to correct it"
+    narrator "You lose some money."
+
+    scene bg living_room_guide
+    with dissolve
+
+    guide "Hey, you got scammed!"
+    guide "Never trust links that don't contain well-known names such as the Swiss Post, and watch for the spelling"
+    guide "Especially if you didn't order any package or the tracking number does not match"
+    guide "Better luck next time!"
+
+    jump message_scam_2_start
+
+
+label message_scam_2_start:
+
+    scene bg living_room
+    with dissolve
+
+    scene bg message_scam_2
+    narrator "You received another message from an unknown number."
+
+    menu:
+        narrator "You..."
+
+        "Block the number":
+            jump message_scam_2_success
+
+        "Click the link":
+            jump message_scam_2_fail
+
+label message_scam_2_success:
+    scene bg living_room
+    with dissolve
+
+    narrator "You block the number."
+
+    scene bg living_room_guide
+    with dissolve
+
+    guide "Hey, you did well blocking that number!"
+
+    guide "Banks will never ask you directly for your credentials, especially not through a website that does not have the name of the bank in it"
+
+    guide "Be very wary of such types of messages!"
+
+    return
+
+label message_scam_2_fail:
+
+
+    scene bg living_room
+    with dissolve
+
+    narrator "You click the link."
+
+    narrator "It opens a portal asking you for your bank credentials"
+
+    narrator "You enter them to 'fix' the payment info"
+
+    narrator "Some time later, you receive another message from your real bank that a lot of your funds have been transferred to an unknown account."
+
+    narrator "You lose a lot of money."
+
+    scene bg living_room_guide
+    with dissolve
+    guide "Hey, you got scammed!"
+    guide "Banks will never ask you directly for your credentials, especially not through a website that does not have the name of the bank in it"
+    guide "Be very wary of such types of messages, because there's no telling in what they'll do with your bank account!"
+    guide "Better luck next time"
+
+    return
+
+
+label phone_scam_1_start:
+
+    return
+
+label door_scam_1_start:
+
+    return
+
     
 label begin:
 
