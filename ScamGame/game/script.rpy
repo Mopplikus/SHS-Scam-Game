@@ -5,7 +5,6 @@
 
 #
 #   TODO:
-#       - fix some of the bugs with the choices
 #       - change the placement for the backgrounds to make it clearer
 #       - add a "dialog hide" button
 #       - implement the more detailed view of when points are deducted
@@ -16,7 +15,7 @@
 #
 #
 
-define narrator = Character("Narrator")
+define narrator = Character("Narrator", color="#2833a8")
 define guide = Character("Scam awareness guy", color="#ffe600")
 
 screen buttons():
@@ -37,27 +36,40 @@ screen buttons():
 
 screen scores():
 
-    $ text_out = ""
+    $ text_money = ""
+    $ text_reputation = ""
 
-    vbox:
-        xalign 0.05
-        yalign 0.05
+    frame:
+        xpos 30
+        ypos 10
+        background "score_background.png"
 
-        if money_green:
-            $ text_out = "{b}{color=#00ff00}Money: [money]{/color}{/b}"
-        elif money_red:
-            $ text_out = "{b}{color=#ff0000}Money: [money]{/color}{/b}"
-        else:
-            $ text_out = "{b}Money: [money]"
+        vbox:
 
-        if reputation_green:
-            $ text_out = text_out + "{b} | {color=#00ff00}Reputation: [reputation]{/color}{/b}"
-        elif reputation_red:
-            $ text_out = text_out + "{b} | {color=#ff0000}Reputation: [reputation]{/color}{/b}"
-        else:
-            $ text_out = text_out + "{b} | Reputation: [reputation]{/b}"
+            if money_green:
+                $ text_money = "{b}{color=#00ff00}Money: [money]{/color}{/b}"
+            elif money_red:
+                $ text_money = "{b}{color=#ff0000}Money: [money]{/color}{/b}"
+            else:
+                $ text_money = "{b}Money: [money]"
 
-        text _(text_out)
+            text _(text_money)
+
+        vbox:
+            yalign 0.05
+
+            if reputation_green:
+                $ text_reputation = "{b}{color=#00ff00}Reputation: [reputation]{/color}{/b}"
+            elif reputation_red:
+                $ text_reputation = "{b}{color=#ff0000}Reputation: [reputation]{/color}{/b}"
+            else:
+                $ text_reputation = "{b}Reputation: [reputation]{/b}"
+
+            text _(text_reputation)
+
+    
+
+    
 
 
 # The game starts here.
@@ -77,7 +89,7 @@ label start:
     $ money_red = False
     $ reputation_red = False
 
-    scene black
+    scene bg white
 
     narrator "Hello! This is your narrator speaking. I'll be helping you along the game. (click to continue)"
 
@@ -414,11 +426,11 @@ label message_scam_4_response:
             jump message_scam_4_2resp_polite
 
         "Scold them that they should have noticed the error sooner.":
-            jump message_scam_4_2resp_scold
+            jump message_scam_4_response_scold
 
 label message_scam_4_2resp_polite:
 
-    scene bg living_room_scam4_X
+    scene bg living_room_scam4_2_3
     with dissolve
 
     narrator "You send a polite message that no harm was done."
@@ -438,6 +450,11 @@ label message_scam_4_2resp_polite:
             jump message_scam_4_polite_fake
 
 label message_scam_4_2resp_scold:
+
+    scene bg living_room_scam4_4_1
+    with dissolve
+
+    narrator "You scold them that they should have looked at their info before contacting you."
 
 label message_scam_4_ghost:
 
