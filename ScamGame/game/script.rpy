@@ -3,6 +3,19 @@
 # Declare characters used by this game. The color argument colorizes the
 # name of the character.
 
+#
+#   TODO:
+#       - fix some of the bugs with the choices
+#       - change the placement for the backgrounds to make it clearer
+#       - add a "dialog hide" button
+#       - implement the more detailed view of when points are deducted
+#       - add in the summary view
+#       - make the tutorial a bit clearer
+#       - put the choices in capitals / make them shorter
+#       - change the background colors to something nicer
+#
+#
+
 define narrator = Character("Narrator")
 define guide = Character("Scam awareness guy", color="#ffe600")
 
