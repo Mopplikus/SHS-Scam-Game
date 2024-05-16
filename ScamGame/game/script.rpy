@@ -5,7 +5,6 @@
 
 #
 #   TODO:
-#       - change the placement for the backgrounds to make it clearer
 #       - add a "dialog hide" button
 #       - implement the more detailed view of when points are deducted
 #       - add in the summary view
@@ -22,17 +21,17 @@ screen buttons():
     imagebutton:
         xalign 0.1
         yalign 0.5
-        auto "door_scam_button_%s.png" action [ToggleScreen("buttons"), Jump("door_scam_1_start")]
+        auto "door_scam_button_%s.png" action [ToggleScreen("buttons"), ToggleScreen("hide_button"), Jump("door_scam_1_start")]
 
     imagebutton:
         xalign 0.5
         yalign 0.5
-        auto "message_scam_button_%s.png" action [ToggleScreen("buttons"), Jump("message_scam_1_start")]
+        auto "message_scam_button_%s.png" action [ToggleScreen("buttons"), ToggleScreen("hide_button"), Jump("message_scam_1_start")]
 
     imagebutton:
         xalign 0.9
         yalign 0.5
-        auto "phone_scam_button_%s.png" action [ToggleScreen("buttons"), Jump("phone_scam_1_start")]
+        auto "phone_scam_button_%s.png" action [ToggleScreen("buttons"), ToggleScreen("hide_button"), Jump("phone_scam_1_start")]
 
 screen scores():
 
@@ -48,10 +47,14 @@ screen scores():
 
             if money_green:
                 $ text_money = "{b}{color=#00ff00}Money: [money]{/color}{/b}"
-            elif money_red:
-                $ text_money = "{b}{color=#ff0000}Money: [money]{/color}{/b}"
             else:
-                $ text_money = "{b}Money: [money]"
+                $ text_money = "{b}Money: [money]{/b}"
+
+            if money_show_diff:
+                if money_remove:
+                    $ text_money = text_money + "{b}{color=#ff0000} (-" + str(money_diff) + "){/color}{/b}"
+                else:
+                    $ text_money = text_money + "{b}{color=#ff00} (+" + str(money_diff) + "){/color}{/b}"
 
             text _(text_money)
 
@@ -60,16 +63,28 @@ screen scores():
 
             if reputation_green:
                 $ text_reputation = "{b}{color=#00ff00}Reputation: [reputation]{/color}{/b}"
-            elif reputation_red:
-                $ text_reputation = "{b}{color=#ff0000}Reputation: [reputation]{/color}{/b}"
             else:
                 $ text_reputation = "{b}Reputation: [reputation]{/b}"
+
+            if reputation_show_diff:
+                if reputation_remove:
+                    $ text_reputation = text_reputation + "{b}{color=#ff0000} (-" + str(reputation_diff) + "){/color}{/b}"
+                else:
+                    $ text_reputation = text_reputation + "{b}{color=#ff00} (+" + str(reputation_diff) + "){/color}{/b}"
 
             text _(text_reputation)
 
     
 
-    
+screen hide_button():
+
+    tag hide_button
+
+    imagebutton:
+        xalign 0.95
+        yalign 0.8
+        auto "hide_button_%s.png" action [HideInterface()]
+        
 
 
 # The game starts here.
@@ -86,8 +101,14 @@ label start:
     $ money_green = False
     $ reputation_green = False
 
-    $ money_red = False
-    $ reputation_red = False
+    $ money_show_diff = False
+    $ reputation_show_diff = False
+
+    $ money_diff = 0
+    $ reputation_diff = 0
+
+    $ money_remove = False
+    $ reputation_remove = False
 
     scene bg white
 
@@ -111,13 +132,17 @@ label start:
     narrator "If you do, please send it to CH81 0027 2272 1468 6540 T with the payment description as \"Gullibility tax\"."
 
     $ money_green = False
-    $ money_red = True
+    $ money_show_diff = True
+    $ money = 19000
+    $ money_diff = 1000
+    $ money_remove = True
 
-    narrator "If you were to lose some money in some question, you'll see that the counter becomes red."
+    narrator "If you were to lose some money in some question, you'll see that the counter shows the amount you lost in red"
 
     narrator "You'll know something went wrong if that happens."
 
-    $ money_red = False
+    $ money_show_diff = False
+    $ money = 20000
 
     narrator "Of course, you'd then let your schizophrenia loose and just say no to everyone trying to contact you, ever."
 
@@ -127,17 +152,23 @@ label start:
 
     narrator "This is a measure of how respectable you are, and correlates with the opinion other people have of you around you."
 
+    $ reputation_green = False
+    $ reputation_show_diff = True
+    $ reputation_remove = False
+    $ reputation_diff = 5
     $ reputation = 10
 
     narrator "If this is high (8 or more), people will think of you as a nice person!"
 
     $ reputation_green = False
-    $ reputation_red = True
+    $ reputation_show_diff = True
+    $ reputation_remove = True
+    $ reputation_diff = 9
     $ reputation = 1
 
     narrator "If it gets too low however (2 or less), people will think you're an asshole."
 
-    $ reputation_red = False
+    $ reputation_show_diff = False
     $ reputation = 5
 
     narrator "So remember to be wary, but also not too paranoid to the point where it may seem rude."
@@ -159,12 +190,17 @@ label start:
 
     narrator "And if you forgot what has previously been said, you can hit the \"History\" button to get a recap on what happened."
 
-    narrator "Finally, if you hit the H key on your keyboard, you can hide the dialog to get a better look at the background. Remember this trick well!"
+    show screen hide_button
+
+    narrator "Finally, you have the hide button on the right."
+
+    narrator "This is useful if you struggle to see what's behind the background. Once you press it, just click once more to go back to the dialog."
 
     narrator "Well then, good luck!"
 
     narrator "You may now choose your gamemode."
 
+    hide screen hide_button
     call screen buttons()
 
     # This shows a character sprite. A placeholder is used, but you can

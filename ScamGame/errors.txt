@@ -2,9 +2,9 @@
 errors listed below, and try again.
 
 
-File "game/script.rpy", line 45: vbox expects a non-empty block.
-    vbox:
-         ^
+File "game/script.rpy", line 203: expected 'name' not found.
+    hide screen "hide_button"
+                ^
 
 Ren'Py Version: Ren'Py 8.2.1.24030407
-Wed May 15 18:58:04 2024
+Thu May 16 09:43:40 2024
