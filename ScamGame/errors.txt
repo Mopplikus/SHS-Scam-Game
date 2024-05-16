@@ -2,9 +2,9 @@
 errors listed below, and try again.
 
 
-File "game/script.rpy", line 203: expected 'name' not found.
-    hide screen "hide_button"
-                ^
+File "game/script.rpy", line 96: the yalign keyword argument was not given a value.
+    yalign: 0.01
+          ^
 
 Ren'Py Version: Ren'Py 8.2.1.24030407
-Thu May 16 09:43:40 2024
+Thu May 16 15:41:53 2024

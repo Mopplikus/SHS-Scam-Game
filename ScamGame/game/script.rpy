@@ -13,7 +13,10 @@
 #
 
 define narrator = Character("Narrator", color="#2833a8")
-define guide = Character("Scam awareness guy", color="#ffe600")
+define guide = Character("Scam awareness guy", color="#048c01")
+
+define good_summary = "#048c01"
+define bad_summary = "#630c00"
 
 screen buttons():
     imagebutton:
@@ -52,7 +55,7 @@ screen scores():
                 if money_remove:
                     $ text_money = text_money + "{b}{color=#ff0000} (-" + str(money_diff) + "){/color}{/b}"
                 else:
-                    $ text_money = text_money + "{b}{color=#ff00} (+" + str(money_diff) + "){/color}{/b}"
+                    $ text_money = text_money + "{b}{color=[good_summary]} (+" + str(money_diff) + "){/color}{/b}"
 
             text _(text_money)
 
@@ -68,7 +71,7 @@ screen scores():
                 if reputation_remove:
                     $ text_reputation = text_reputation + "{b}{color=#ff0000} (-" + str(reputation_diff) + "){/color}{/b}"
                 else:
-                    $ text_reputation = text_reputation + "{b}{color=#ff00} (+" + str(reputation_diff) + "){/color}{/b}"
+                    $ text_reputation = text_reputation + "{b}{color=[good_summary]} (+" + str(reputation_diff) + "){/color}{/b}"
 
             text _(text_reputation)
 
@@ -82,8 +85,23 @@ screen hide_button():
         xalign 0.95
         yalign 0.8
         auto "hide_button_%s.png" action [HideInterface()]
-        
 
+
+
+screen show_summary():
+
+    frame:
+        xpos 610
+        ypos 50
+        background "summary_background.png"
+
+        vbox:
+            xmaximum 600
+            yalign 0.02
+            xalign 0.02
+            box_wrap True
+            text _("Summary:\n{size=*0.7}" + summary_text + "{/size}")
+        
 
 # The game starts here.
 
@@ -107,6 +125,8 @@ label start:
 
     $ money_remove = False
     $ reputation_remove = False
+
+    $ summary_text = ""
 
     scene bg white
 
@@ -194,10 +214,28 @@ label start:
 
     narrator "This is useful if you struggle to see what's behind the background. Once you press it, just click once more to go back to the dialog."
 
+    narrator "At the end of each portion of the game, you can expect to see a summary of what went well and what went wrong."
+
+    $ summary_text = """-Click to advance to the next dialog\n{size=*0.3}
+{/size}-Sometimes you'll be given a list of options to choose from; click on them\n{size=*0.3}
+{/size}-At the top left, you can check your score in terms of money and reputation\n{size=*0.3}
+{/size}-At the bottom of the screen is a back button if you want to return to the previous dialog\n{size=*0.3}
+{/size}-If you missed any portion of the dialog, you can re-read it under the history button\n{size=*0.3}
+{/size}-If you need to see the background more clearly, press the hide button; then click to go back\n{size=*0.3}
+{/size}-Summaries such as this one will appear at the end of a segment to tell you how you've done"""
+    show screen show_summary()
+
+    narrator "Such as this one. That way, you'll always remember what you did well and what needs improvement."
+
+    hide screen show_summary
+
     narrator "Well then, good luck!"
+
+    scene bg white_clear
 
     narrator "You may now choose your gamemode."
 
+    hide screen scores
     hide screen hide_button
     call screen buttons()
 
@@ -215,6 +253,12 @@ label start:
 ### SCAM 1
 
 label message_scam_1_start:
+
+    $ money = 20000
+    $ reputation = 5
+    $ summary_text = ""
+
+    show screen scores()
 
     scene bg living_room
     with fade
@@ -244,6 +288,8 @@ label message_scam_1_success:
     scene bg living_room_blur
     with dissolve
 
+    $ summary_text += "-{color=[good_summary]}You didn't trust the fake package{/color}"
+
     narrator "You block the number."
     scene bg living_room_guide
     with dissolve
@@ -263,9 +309,19 @@ label message_scam_1_fail:
     scene bg living_room_blur
     with dissolve
 
+    $ summary_text += "-{color=[bad_summary]}You fell for a false package delivery notice{/color}"
+
     narrator "You click the link, and go through the menus on the portal that opens"
     narrator "You realise that the delivery address is wrong, and that you have to pay a fee to correct it"
+
+    $ money_show_diff = True
+    $ money_diff = 1000
+    $ money -= money_diff
+    $ money_remove = True
+
     narrator "You lose some money."
+
+    $ money_show_diff = False
 
     scene bg living_room_guide
     with dissolve
@@ -302,6 +358,8 @@ label message_scam_2_success:
     scene bg living_room_blur
     with dissolve
 
+    $ summary_text += "{size=*0.3}\n{/size}-{color=[good_summary]}You identified a fake bank message{/color}"
+
     narrator "You block the number."
 
     scene bg living_room_guide
@@ -316,10 +374,10 @@ label message_scam_2_success:
     jump message_scam_3_start
 
 label message_scam_2_fail:
-
-
     scene bg living_room_blur
     with dissolve
+
+    $ summary_text += "\n{size=*0.3}\n{/size}-{color=[bad_summary]}You fell for a fake bank message{/color}"
 
     narrator "You click the link."
 
@@ -327,9 +385,16 @@ label message_scam_2_fail:
 
     narrator "You enter them to 'fix' the payment info"
 
+    $ money_show_diff = True
+    $ money_diff = 4000
+    $ money -= money_diff
+    $ money_remove = True
+
     narrator "Some time later, you receive another message from your real bank that a lot of your funds have been transferred to an unknown account."
 
     narrator "You lose a lot of money."
+
+    $ money_show_diff = False
 
     scene bg living_room_guide
     with dissolve
@@ -378,6 +443,8 @@ label message_scam_3_cont:
 
 label message_scam_3_success1:
 
+    $ summary_text += "\n{size=*0.3}\n{/size}-{color=[good_summary]}You didn't click the weird gift link{/color}"
+
     scene bg living_room_blur
     with dissolve
 
@@ -391,7 +458,9 @@ label message_scam_3_success1:
 
 label message_scam_3_success2:
 
-    scene bg living_room_blur
+    $ summary_text += "\n{size=*0.3}\n{/size}-You didn't put your personal info into the weird gift link, but still clicked it"
+
+    scene bg living_room_guide
     with dissolve
 
     guide "Hey, good job! You detected the scam!"
@@ -403,8 +472,18 @@ label message_scam_3_success2:
 
 label message_scam_3_fail:
 
+    $ summary_text += "\n{size=*0.3}\n{/size}-{color=[bad_summary]}You entered your personal details into a fake giveaway{/color}"
+
     narrator "You enter in your personal details to get the free voucher you've won."
+
+    $ money_show_diff = True
+    $ money_diff = 1000
+    $ money -= money_diff
+    $ money_remove = True
+
     narrator "The website does not seem in any way strange to you."
+
+    $ money_show_diff = False
 
     scene bg living_room_guide
     with dissolve
@@ -446,7 +525,7 @@ label message_scam_4_response:
     scene bg living_room_scam4_2_1
     with dissolve
 
-    narrator "You try to be polite by responding that they have the wrong number. "
+    narrator "You try to be polite by responding that they have the wrong number."
 
     scene bg living_room_scam4_2_2
     with dissolve
@@ -467,7 +546,14 @@ label message_scam_4_2resp_polite:
     scene bg living_room_scam4_2_3
     with dissolve
 
+    $ reputation_show_diff = True
+    $ reputation_diff = 1
+    $ reputation += reputation_diff
+    $ reputation_remove = False
+
     narrator "You send a polite message that no harm was done."
+
+    $ reputation_show_diff = False
 
     scene bg living_room_scam4_3_3
     with dissolve
@@ -488,7 +574,18 @@ label message_scam_4_2resp_scold:
     scene bg living_room_scam4_4_1
     with dissolve
 
+    $ summary_text += "\n{size=*0.3}\n{/size}-{color=[bad_summary]}You were rude to some stranger although there was no reason to{/color}"
+
+    $ reputation_show_diff = True
+    $ reputation_diff = 1
+    $ reputation -= reputation_diff
+    $ reputation_remove = True
+
     narrator "You scold them that they should have looked at their info before contacting you."
+
+    $ reputation_show_diff = False
+
+    
 
 label message_scam_4_ghost:
 
@@ -513,7 +610,14 @@ label message_scam_4_response_polite:
     scene bg living_room_scam4_3_2
     with dissolve
 
+    $ reputation_show_diff = True
+    $ reputation_diff = 1
+    $ reputation += reputation_diff
+    $ reputation_remove = False
+
     narrator "You send a polite message that no harm was done."
+
+    $ reputation_show_diff = False
 
     scene bg living_room_scam4_3_3
     with dissolve
@@ -535,7 +639,16 @@ label message_scam_4_response_scold:
     scene bg living_room_scam4_4_1
     with dissolve
 
+    $ reputation_show_diff = True
+    $ reputation_diff = 1
+    $ reputation -= reputation_diff
+    $ reputation_remove = True
+
+    $ summary_text += "\n{size=*0.3}\n{/size}-{color=[bad_summary]}You were rude to some stranger although there was no reason to{/color}"
+
     narrator "You scold them that they should have looked at their info before contacting you."
+
+    $ reputation_show_diff = False
 
     scene bg living_room_scam4_4_2
     with dissolve
@@ -556,6 +669,8 @@ label message_scam_4_polite_name:
     scene bg living_room_scam4_3_4
     with dissolve
 
+    $ summary_text += "\n{size=*0.3}\n{/size}-{color=[bad_summary]}You disclosed your real name{/color}"
+
     narrator "You send them your real name."
 
     scene bg living_room_scam_4_3_5
@@ -565,10 +680,12 @@ label message_scam_4_polite_name:
 
     jump message_scam_5_start
 
-label message_scam_polite_fake:
+label message_scam_4_polite_fake:
 
     scene bg living_room_scam4_3_6
     with dissolve
+
+    $ summary_text += "\n{size=*0.3}\n{/size}-{color=[good_summary]}You didn't disclose your real name{/color}"
 
     narrator "You send them a fake name."
 
@@ -583,6 +700,8 @@ label message_scam_4_scold_name:
     scene bg living_room_scam4_4_3
     with dissolve
 
+    $ summary_text += "\n{size=*0.3}\n{/size}-{color=[bad_summary]}You disclosed your real name{/color}"
+
     narrator "You send them your real name."
 
     scene bg living_room_scam4_4_4
@@ -596,6 +715,8 @@ label message_scam_4_scold_fake:
 
     scene bg living_room_scam4_4_5
     with dissolve
+
+    $ summary_text += "\n{size=*0.3}\n{/size}-{color=[good_summary]}You didn't disclose your real name{/color}"
 
     narrator "You send them a fake name."
 
@@ -635,6 +756,8 @@ label message_scam_5_refuse:
     scene bg living_room_blur
     with dissolve
 
+    $ summary_text += "\n{size=*0.3}\n{/size}-You didn't help the stranger; there's no telling if they were a scammer or not"
+
     narrator "You refuse and block the number."
 
     scene bg living_room_guide
@@ -642,6 +765,8 @@ label message_scam_5_refuse:
 
     guide "Good job! Your scam radar is on point. Remember, never trust someone asking for money through chat."
     guide "Always verify requests and never send money to someone you don't know or trust."
+
+    jump scam_end
 
 
 label message_scam_5_inquire:
@@ -672,6 +797,8 @@ label message_scam_5_inquire_success:
     scene bg living_room_blur
     with dissolve
 
+    $ summary_text += "\n{size=*0.3}\n{/size}-{color=[good_summary]}You didn't get scammed by a stranger{/color}"
+
     narrator "You decide to ignore the request and block the number."
 
     scene bg living_room_guide
@@ -680,14 +807,23 @@ label message_scam_5_inquire_success:
     guide "Good job! Your scam radar is on point. Remember, never trust someone asking for money through chat."
     guide "Always verify requests and never send money to someone you don't know or trust."
 
-    return
+    jump scam_end
 
 label message_scam_5_inquire_fail:
 
     scene bg living_room_blur
     with dissolve
 
+    $ summary_text += "\n{size=*0.3}\n{/size}-{color=[bad_summary]}You got scammed by a stranger, for good or for ill{/color}"
+
+    $ money_show_diff = True
+    $ money_diff = 1000
+    $ money -= money_diff
+    $ money_remove = True
+
     narrator "You send the money to the account given to you."
+
+    $ money_show_diff = False
 
     scene bg living_room_guide
     with dissolve
@@ -695,7 +831,26 @@ label message_scam_5_inquire_fail:
     guide "Uh-oh! Looks like you've been taken for a ride!"
     guide "Remember, while it's great to be generous and helpful, always verify requests for money, especially online, you should never trust someone that asks you money by chat."
 
-    return
+    jump scam_end
+
+label scam_end:
+
+    scene bg white_clear
+    with dissolve
+
+    narrator "You're at the end of this portion of the game."
+
+    show screen show_summary()
+
+    narrator "Here's how you did"
+
+    hide screen show_summary
+
+    narrator "You will now return to the menu."
+
+    hide screen scores
+
+    call screen buttons()
 
 # ----------------------------------------
 #           PHONE SCAMS
@@ -712,66 +867,5 @@ label phone_scam_1_start:
 
 
 label door_scam_1_start:
-
-    return
-
-    
-label begin:
-
-    narrator "Welcome to the scam guessing game"
-    narrator "This is still in development, so don't be afraid to give feedback!"
-    
-    scene bg porch
-    with fade
-
-    narrator "You're walking to your house when you meet an unexpected figure"
-
-    show salesman
-    with dissolve
-
-    salesman "Hello! I'm a representative of your state's building inspection department"
-
-    salesman "Your house looks like a fire hazard. You have to buy my insurance for 10'000 CHF or you'll be in legal trouble for sure!"
-
-    menu:
-        narrator "You..."
-
-        "Pay him the 10'000CHF you just got from the bank":
-            jump oops
-
-        "Flip him off":
-            jump win
-
-
-label oops:
-
-    salesman "Thank you very much! It was a pleasure doing business with you!"
-
-    hide salesman
-    with dissolve
-
-    narrator "You get the feeling you shouldn't have trusted him so easily"
-
-    scene bg room
-    with fade
-    narrator "The end, for now"
-
-    return
-
-
-label win:
-
-    narrator "You tell the weird man to go fuck himself."
-
-    salesman "Argh! You old people, always know when something's up!"
-
-    hide salesman
-    with dissolve
-
-    narrator "You've done well spotting this scam"
-
-    scene bg room
-    with fade
-    narrator "The end, for now"
 
     return
