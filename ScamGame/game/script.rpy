@@ -5,11 +5,7 @@
 
 #
 #   TODO:
-#       - add in the summary view
-#       - make the tutorial a bit clearer
 #       - put the choices in capitals / make them shorter
-#       - change the background colors to something nicer
-#
 #
 
 define narrator = Character("Narrator", color="#2833a8")
@@ -766,7 +762,7 @@ label message_scam_5_refuse:
     guide "Good job! Your scam radar is on point. Remember, never trust someone asking for money through chat."
     guide "Always verify requests and never send money to someone you don't know or trust."
 
-    jump scam_end
+    jump message_scam_6_start
 
 
 label message_scam_5_inquire:
@@ -807,7 +803,7 @@ label message_scam_5_inquire_success:
     guide "Good job! Your scam radar is on point. Remember, never trust someone asking for money through chat."
     guide "Always verify requests and never send money to someone you don't know or trust."
 
-    jump scam_end
+    jump message_scam_6_start
 
 label message_scam_5_inquire_fail:
 
@@ -831,7 +827,98 @@ label message_scam_5_inquire_fail:
     guide "Uh-oh! Looks like you've been taken for a ride!"
     guide "Remember, while it's great to be generous and helpful, always verify requests for money, especially online, you should never trust someone that asks you money by chat."
 
+    jump message_scam_6_start
+
+
+### MESSAGE SCAM 6
+label message_scam_6_start:
+
+    scene bg living_room_blur
+    with dissolve
+
+    narrator "You received one final message from an unknown sender."
+
+    scene bg living_room_scam6
+    with dissolve
+
+    menu:
+        narrator "You..."
+
+        "Send a donation":
+            jump message_scam_6_fail
+
+        "Do nothing and block the number":
+            jump message_scam_6_success
+
+
+label message_scam_6_success:
+
+    scene bg living_room_blur
+    with dissolve
+
+    $ summary_text += "\n{size=*0.3}\n{/size}-{color=[good_summary]}You didn't get scammed by a fake charity{/color}"
+
+    narrator "You ignore the request and block the number."
+
+    scene bg living_room_guide
+    with dissolve
+
+    guide "Hey, you did well not donating anything!"
+    guide "It's rare that unsollicited calls for charity are not a scam."
+    guide "For instance, this 'sunshine charity' may only be a fake company name for a scammer."
+    guide "If you want to donate money, contact charities directly."
+
     jump scam_end
+
+
+label message_scam_6_fail:
+
+    scene bg living_room_blur
+    with dissolve
+
+    $ summary_text += "\n{size=*0.3}\n{/size}-{color=[bad_summary]}You got scammed by a fake charity{/color}"
+
+    narrator "You go through the process of donating money to this 'Sunshine Charity'."
+
+    $ money_show_diff = True
+    $ money_diff = 1000
+    $ money -= money_diff
+    $ money_remove = True
+
+    narrator "You lose some money."
+
+    $ money_show_diff = False
+
+    scene bg living_room_guide
+    with dissolve
+
+    guide "Oh no! You got scammed."
+    guide "Scammers may use evil tactics like registering a fake company name to appear as a charity."
+    guide "There's no way to know for sure that such a charity like the 'Sunshine Charity' actually is legitimate."
+    guide "If you want to donate money, you should contact charities directly."
+
+    jump scam_end
+
+
+
+# ----------------------------------------
+#           PHONE SCAMS
+# ----------------------------------------
+
+label phone_scam_1_start:
+
+    return
+
+
+# ----------------------------------------
+#           DOOR TO DOOR SCAMS
+# ----------------------------------------
+
+
+label door_scam_1_start:
+
+    return
+
 
 label scam_end:
 
@@ -851,21 +938,3 @@ label scam_end:
     hide screen scores
 
     call screen buttons()
-
-# ----------------------------------------
-#           PHONE SCAMS
-# ----------------------------------------
-
-label phone_scam_1_start:
-
-    return
-
-
-# ----------------------------------------
-#           DOOR TO DOOR SCAMS
-# ----------------------------------------
-
-
-label door_scam_1_start:
-
-    return
