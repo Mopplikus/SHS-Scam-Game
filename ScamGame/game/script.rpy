@@ -9,7 +9,9 @@
 #
 
 define narrator = Character("Narrator", color="#2833a8")
+define you = Character("You", color="#6961c2")
 define guide = Character("Scam awareness guy", color="#048c01")
+define caller = Character("Unknown caller", color="#545454")
 
 define good_summary = "#048c01"
 define bad_summary = "#630c00"
@@ -83,6 +85,14 @@ screen hide_button():
         auto "hide_button_%s.png" action [HideInterface()]
 
 
+screen skip_tutorial_button():
+
+    imagebutton:
+        xalign 0.05
+        yalign 0.8
+        auto "skip_button_%s.png" action [ToggleScreen("skip_tutorial_button"), Jump("level_choose")]
+
+
 
 screen show_summary():
 
@@ -126,7 +136,11 @@ label start:
 
     scene bg white
 
+    show screen skip_tutorial_button()
+
     narrator "Hello! This is your narrator speaking. I'll be helping you along the game. (click to continue)"
+
+    hide screen skip_tutorial_button
 
 
     narrator "First, I'll have to explain to you a basic mechanic here, and that is how to win."
@@ -231,8 +245,16 @@ label start:
 
     narrator "You may now choose your gamemode."
 
+    jump level_choose
+
+
+label level_choose:
+
+    scene bg white_clear
+
     hide screen scores
     hide screen hide_button
+    hide screen show_summary
     call screen buttons()
 
     # This shows a character sprite. A placeholder is used, but you can
@@ -908,8 +930,174 @@ label message_scam_6_fail:
 
 label phone_scam_1_start:
 
-    return
+    $ money = 20000
+    $ reputation = 5
+    $ summary_text = ""
 
+    show screen scores
+
+    scene bg phone
+    with fade
+
+    narrator "You are at home when your phone suddenly rings. You don't recognize the number, and the voice isn't familiar to you."
+
+    scene bg phone_blur
+    with dissolve
+
+    caller "Hello, is this Mrs. [[Your last name]? I'm calling from the hospital."
+
+    caller "Your grandson, Michael, has been in a car accident and needs urgent medical treatment."
+
+    caller "We need you to send money immediately to cover the expenses."
+
+    narrator "You gasp in shock."
+
+    narrator "You respond:"
+
+    you "Oh my goodness! Is Michael alright? What happened?"
+
+    caller "He's been in a car accident, ma'am. He's conscious, but he's badly injured."
+
+    caller "We need to start the treatment right away, and unfortunately, he doesn't have insurance coverage for this."
+
+    narrator "You're pretty worried about Michael."
+
+    you "I need to speak with Michael. Can I talk to him?"
+
+    caller "I'm sorry, ma'am, he's currently in the emergency room undergoing initial treatment."
+
+    caller "He won't be able to speak on the phone right now."
+
+    caller "Please, Mrs. Johnson, we need to act fast to ensure he gets the medical attention he needs."
+
+    menu:
+
+        narrator "You..."
+
+        "Ask how much money they need":
+            you "Oh no! Of course, I'll do anything to help Michael. How much money do you need?"
+            caller "I am sending you all the necessary information. Please send the money to us right away."
+            $ summary_text += "-{color=[bad_summary]}You immediately trusted a stranger over the phone{/color}"
+            jump phone_scam_1_mid
+
+        "Ask to speak with Michael first":
+            you "I need to speak to Michael first. Let me talk to him."
+            caller "I'm sorry, Mrs. Johnson, but Michael is unconscious right now. We need to act quickly. Please send the money immediately."
+            $ summary_text += "-{color=[good_summary]}You didn't panic and tried to better understand the situation{/color}"
+            caller "I understand your concerns, Mrs. Johnson, but time is of the essence. Please provide your bank account details, and I'll guide you through the process."
+            caller "I'll send you all the necessary information. If you're unable to proceed, I'll have to assist the next person in need."
+            jump phone_scam_1_mid
+
+        "Call Michael's parents first":
+            you "This sounds suspicious. I'm going to call Michael's parents to verify."
+            caller "There's no time for that! We need the money now to save Michael's life."
+            $ summary_text += "-{color=[good_summary]}You didn't panic and tried to better understand the situation{/color}"
+            caller "I understand your concerns, Mrs. Johnson, but time is of the essence. Please provide your bank account details, and I'll guide you through the process."
+            caller "I'll send you all the necessary information. If you're unable to proceed, I'll have to assist the next person in need."
+            jump phone_scam_1_mid
+
+
+
+label phone_scam_1_mid:
+
+    narrator "You take a moment to consider your actions."
+
+    menu:
+
+        narrator "You..."
+
+        "Fill out the information for the payment":
+            jump phone_scam_1_1
+
+        "Ignore the call and hang up":
+            jump phone_scam_1_2
+
+        "Call other relatives to verify":
+            jump phone_scam_1_3
+
+
+label phone_scam_1_1:
+
+    narrator "You fill out the information for the payment."
+    narrator "The operation is quite expensive, but surely it's worth it for your grandson."
+
+    $ summary_text += "\n{size=*0.3}\n{/size}-{color=[bad_summary]}You got scammed out of a lot of money.{/color}"
+
+    $ money_show_diff = True
+    $ money_diff = 13000
+    $ money -= money_diff
+    $ money_remove = True
+
+    narrator "You confirm the transaction."
+
+    $ money_show_diff = False
+
+    narrator "You're relieved that Michael gets the treatment he needs."
+
+    narrator "A few hours later, Michael's parents call you and tell you how their holiday with Michael is going."
+
+    narrator "You realize you've been scammed and that Michael's accident was fake."
+
+    scene bg phone_guide
+    with dissolve
+
+    guide "Oh no! You've been scammed."
+    guide "This one is quite vicious; scammers will use whatever tricks they can to take your money."
+    guide "Scammers might pretend to be an “authority figure,” like a fake lawyer, police officer, or doctor working with your family member."
+    guide "It makes them sound more convincing, and they hope it scares you."
+    guide "They count on the fact that you won't check if the emergency is real or not."
+    guide "Even if they know your name and your grandson's name, this is information which may be easily obtainable for them."
+    guide "Don't let your guard down!"
+    guide "The next step would be to contact your bank or any help line aimed at scam victims."
+
+    jump scam_end
+
+
+label phone_scam_1_2:
+
+    narrator "You're not sure enough if this is a scam or not."
+    narrator "You decide to hang up."
+    
+    $ summary_text += "\n{size=*0.3}\n{/size}-{color=[good_summary]}You kept your money, yay?{/color}"
+    $ summary_text += "\n{size=*0.3}\n{/size}-{color=[bad_summary]}You don't know if Michael was in real danger or not.{/color}"
+    
+    $ reputation_show_diff = True
+    $ reputation_diff = 3
+    $ reputation -= reputation_diff
+    $ reputation_remove = True
+
+    narrator "You start thinking. If Michael was in real danger, then you'll be shunned by your family from now on."
+    $ reputation_show_diff = False
+
+    scene bg phone_guide
+    with dissolve
+
+    guide "While it's great to avoid potential scams, there's always a chance that a relative could genuinely be in need of help."
+    guide "It might be worth reaching out to other family members or trusted contacts to verify the situation before dismissing it entirely."
+
+    jump scam_end
+
+
+label phone_scam_1_3:
+
+    $ summary_text += "\n{size=*0.3}\n{/size}-{color=[good_summary]}You didn't let your guard down and verified the well-being of Michael.{/color}"
+
+    narrator "You don't trust the caller enough to be sure that this is legitimate. You hang up."
+    narrator "You call Michael's parents. They tell you that they're on vacation with Michael and that they're doing great."
+
+    scene bg phone_guide
+    with dissolve
+
+    guide "Great job on dodging the scam!"
+    guide "This one is quite vicious; scammers will use whatever tricks they can to take your money."
+    guide "Scammers might pretend to be an “authority figure,” like a fake lawyer, police officer, or doctor working with your family member."
+    guide "It makes them sound more convincing, and they hope it scares you."
+    guide "They count on the fact that you won't check if the emergency is real or not."
+    guide "Even if they know your name and your grandson's name, this is information which may be easily obtainable for them."
+    guide "It's fantastic that you reached out to your relatives for confirmation."
+    guide "It's always smart to double-check with trusted sources to ensure everyone's safety and well-being."
+
+    jump scam_end
 
 # ----------------------------------------
 #           DOOR TO DOOR SCAMS

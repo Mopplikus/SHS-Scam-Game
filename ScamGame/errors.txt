@@ -2,9 +2,9 @@
 errors listed below, and try again.
 
 
-File "game/script.rpy", line 96: the yalign keyword argument was not given a value.
-    yalign: 0.01
-          ^
+File "game/script.rpy", line 91: is not terminated with a newline. (Check strings and parenthesis.)
+(Perhaps you left out a " at the end of the first line.)
+            auto "skip_button_%s.png" action [Jump("level_choose"), ToggleScreen("skip_tutoria_button"")]
 
 Ren'Py Version: Ren'Py 8.2.1.24030407
-Thu May 16 15:41:53 2024
+Thu May 16 22:36:27 2024
