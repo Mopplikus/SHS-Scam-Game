@@ -5,8 +5,6 @@
 
 #
 #   TODO:
-#       - add a "dialog hide" button
-#       - implement the more detailed view of when points are deducted
 #       - add in the summary view
 #       - make the tutorial a bit clearer
 #       - put the choices in capitals / make them shorter
