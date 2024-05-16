@@ -669,7 +669,7 @@ label message_scam_4_polite_name:
 
     narrator "You send them your real name."
 
-    scene bg living_room_scam_4_3_5
+    scene bg living_room_scam4_3_5
     with dissolve
 
     narrator "You receive a reply from the unknown contact."
@@ -825,7 +825,8 @@ label message_scam_5_inquire_fail:
     with dissolve
 
     guide "Uh-oh! Looks like you've been taken for a ride!"
-    guide "Remember, while it's great to be generous and helpful, always verify requests for money, especially online, you should never trust someone that asks you money by chat."
+    guide "Remember, while it's great to be generous and helpful, always verify requests for money."
+    guide "Especially online, you should never trust someone that asks you money by chat."
 
     jump message_scam_6_start
 
