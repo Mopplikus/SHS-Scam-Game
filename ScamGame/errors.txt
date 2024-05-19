@@ -2,9 +2,13 @@
 errors listed below, and try again.
 
 
-File "game/script.rpy", line 91: is not terminated with a newline. (Check strings and parenthesis.)
-(Perhaps you left out a " at the end of the first line.)
-            auto "skip_button_%s.png" action [Jump("level_choose"), ToggleScreen("skip_tutoria_button"")]
+File "game/script.rpy", line 1283: end of line expected.
+    jump label door_scam_1_meet_cont
+               ^
+
+File "game/script.rpy", line 1306: end of line expected.
+    jump label door_scam_1_meet_cont
+               ^
 
 Ren'Py Version: Ren'Py 8.2.1.24030407
-Thu May 16 22:36:27 2024
+Sun May 19 16:10:04 2024

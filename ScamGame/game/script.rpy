@@ -12,9 +12,12 @@ define narrator = Character("Narrator", color="#2833a8")
 define you = Character("You", color="#6961c2")
 define guide = Character("Scam awareness guy", color="#048c01")
 define caller = Character("Unknown caller", color="#545454")
+define businessman = Character("Businessman", color="#380169")
 
 define good_summary = "#048c01"
 define bad_summary = "#630c00"
+
+image salesman = "salesman.png"
 
 screen buttons():
     imagebutton:
@@ -932,9 +935,9 @@ label phone_scam_1_start:
 
     $ money = 20000
     $ reputation = 5
-    $ summary_text = ""
+    $ summary_text = ""   
 
-    show screen scores
+    show screen scores() 
 
     scene bg phone
     with fade
@@ -1106,7 +1109,381 @@ label phone_scam_1_3:
 
 label door_scam_1_start:
 
-    return
+    $ meet_at_home = False
+
+    $ money = 20000
+    $ reputation = 5
+    $ summary_text = ""
+
+    show screen scores()
+
+    scene bg phone
+    with fade
+
+    narrator "You're sitting at home when the phone suddenly starts ringing. You don't recognize the number."
+
+    scene bg phone_blur
+    with dissolve
+
+    caller "Hello, my name is Jan Van Holt and I am the representative of \"A better choice\"."
+    caller "We are an agency that offers its clients home care and legal financial planning."
+
+    narrator "The man goes on to explain that the company he works for helps the elderly with their paperwork."
+    
+    caller "Are you alone in these matters or am I mistaken? Besides, your sons are now very busy... I understand you well... But I can give you some more information!"
+
+    narrator "It seems that this representative has everything you want and understands your needs."
+    narrator "Although, you're not really sure who's really talking behind the phone..."
+
+    menu:
+
+        narrator "You..."
+
+        "Go ahead with the call":
+            jump door_scam_1_call
+
+        "Ask for a face-to-face meeting":
+            jump door_scam_1_meet
+
+
+label door_scam_1_call:
+
+    $ summary_text += "\n{size=*0.3}\n{/size}-You carried on with the phone call, for good or for ill."
+
+    narrator "You decide to go ahead with the call. A chat on the phone can't hurt anyone."
+
+    caller "Of course I can give you some more details!"
+
+    narrator "He goes on to praise the professionalism of his coworkers, as well as a list of services they offer."
+    narrator "Sounds quite interesting, and they seem professional too..."
+    narrator "You give them your address, so that you'll have more time to consider the proposal."
+
+    $ summary_text += "\n{size=*0.3}\n{/size}-{color=[bad_summary]}You disclosed your address.{/color}"
+
+    scene bg white_clear
+    with dissolve
+
+    narrator "Some days after..."
+
+    scene bg leaflet
+    with dissolve
+
+    narrator "You receive a leaflet from \"A better choice\", along with a written statement from Jan Van Holt, the man you talked with on the phone."
+
+    scene bg leaflet_blur
+    with dissolve
+
+    narrator "The leaflet compiles a list of services they offer. This goes from personal business to managing legal and financial matters."
+    narrator "\"Whichever of those tasks would be taken over 100\% by the company\" is stated in the leaflet."
+    narrator "The statement gives you instructions on how to fill out the leaflet."
+    narrator "To customize the care package to your needs, they need your bank details as well as some personal information."
+
+    menu:
+        narrator "You..."
+
+        "Go ahead with the payment.":
+            jump door_scam_1_call_fail
+
+        "Don't send them anything and trash the leaflet.":
+            jump door_scam_1_call_success
+
+
+label door_scam_1_call_fail:
+
+    $ summary_text += "\n{size=*0.3}\n{/size}-{color=[bad_summary]}You gave away your bank details.{/color}"
+
+    scene bg living_room_blur
+    with dissolve
+
+    narrator "You fill out the leaflet and bring it to the nearest post box."
+
+    $ money_show_diff = True
+    $ money_diff = 11000
+    $ money -= money_diff
+    $ money_remove = True
+
+    narrator "A few days later, your bank informs you that large amounts of money have been transferred from your account."
+    narrator "You never hear from \"A better choice\" or Jan Van Holt ever again."
+
+    $ money_show_diff = False
+
+    scene bg living_room_guide
+    with dissolve
+
+    guide "Oh no! You've been scammed."
+    guide "Never give personal details without looking for the company online or asking someone close to do so, even if it seems legitimate."
+    guide "Crooks like these target older people who don't have immediate family to look after them."
+    guide "They trick you into giving them your bank details and drain your account."
+    guide "If you've been scammed, immediately contact your bank directly, or a financial counselor."
+    guide "Also report the scam, even if you didn't lose anything."
+
+    jump scam_end
+
+
+label door_scam_1_call_success:
+
+    scene bg living_room_blur
+    with dissolve
+
+    $ summary_text += "\n{size=*0.3}\n{/size}-{color=[good_summary]}You didn't let your guard down and didn't leak your bank details.{/color}"
+
+    narrator "You throw the leaflet and statement in the trash."
+    narrator "During the following week, they try to contact you again and again to get you to give them your details."
+    narrator "You block them and report them for harassment."
+
+    scene bg living_room_guide
+    with dissolve
+
+    guide "Well done on spotting the scam!"
+    guide "Never give personal details without looking for the company online or asking someone close to do so, even if it seems legitimate."
+    guide "Crooks like these target older people who don't have immediate family to look after them."
+    guide "They trick you into giving them your bank details and drain your account."
+    guide "If you've been scammed, immediately contact your bank directly, or a financial counselor."
+    guide "Also report the scam, even if you didn't lose anything."
+
+    jump scam_end
+
+
+label door_scam_1_meet:
+
+    narrator "You know you can tell when someone is lying. You ask for a face-to-face meeting."
+
+    $ summary_text += "\n{size=*0.3}\n{/size}-You chose to meet in person, which can be more risky"
+
+    caller "Sure, we can arrange an appointment!"
+    caller "Would you prefer coming to our location or a more comfortable meeting at your home?"
+
+    menu:
+
+        narrator "You prefer..."
+
+        "Their office":
+            jump door_scam_1_meet_office
+
+        "At your home":
+            jump door_scam_1_meet_home
+
+
+label door_scam_1_meet_office:
+
+    $ meet_at_home = False
+
+    $ summary_text += "\n{size=*0.3}\n{/size}-{color=[good_summary]}You didn't disclose your real address by meeting at their offices.{/color}"
+
+    caller "Very well. Let's meet at..."
+
+    narrator "They give you the address to meet."
+
+    scene bg office
+    with fade
+
+    narrator "When arriving at the address, you are led to an office."
+
+    scene bg office_blur
+    with dissolve
+
+    narrator "You are greeted by what seems to be the person you had on the phone."
+
+    jump door_scam_1_meet_cont
+
+
+label door_scam_1_meet_home:
+
+    $ meet_at_home = True
+
+    $ summary_text += "\n{size=*0.3}\n{/size}-{color=[bad_summary]}By meeting at your home, you disclosed your real address.{/color}"
+
+    caller "Very well. Please communicate your address to me so that we can meet."
+
+    narrator "You give them your address."
+
+    scene bg porch
+    with fade
+
+    narrator "A few days later, someone is ringing on your door."
+
+    scene bg porch_blur
+    with dissolve
+
+    narrator "You are greeted by what seems to be the person you had on the phone."
+
+    jump door_scam_1_meet_cont
+
+
+
+label door_scam_1_meet_cont:
+
+    show salesman
+    with dissolve
+
+    businessman "Hello, I am Jan Van Holt, from \"A better choice\"."
+    businessman "I'm so happy to meet you! Let's talk about the advantages of making use of our services."
+    
+    narrator "He goes over the services they offer."
+
+    businessman "To tailor our help package to your needs, we'll have to ask you some questions."
+
+    businessman "Do you live alone? Do you have daughters and sons? If so, what are their names?"
+
+    menu:
+        narrator "You..."
+
+        "Answer truthfully":
+            jump door_scam_1_truth
+
+        "Say you have people close, whether this is true or not":
+            jump door_scam_1_lie
+
+label door_scam_1_truth:
+
+    narrator "You answer truthfully."
+
+    $ summary_text += "\n{size=*0.3}\n{/size}-{color=[bad_summary]}You disclosed your close circle, which can be problematic if it's not very large.{/color}"
+
+    jump door_scam_1_cont2
+
+
+label door_scam_1_lie:
+
+    narrator "You tell them that you have some people around you, no matter if it is true or not."
+
+    $ summary_text += "\n{size=*0.3}\n{/size}-{color=[good_summary]}You didn't disclose your close circle.{/color}"
+
+    jump door_scam_1_cont2
+
+
+label door_scam_1_cont2:
+
+    businessman "Very well. Do you have any assets or a pension?"
+
+    menu:
+        narrator "You..."
+
+        "Answer truthfully":
+            jump door_scam_1_truth2
+
+        "Answer vaguely":
+            jump door_scam_1_lie2
+
+
+label door_scam_1_truth2:
+
+    narrator "You give them a list of your financial assets, as well as your pension details."
+
+    $ summary_text += "\n{size=*0.3}\n{/size}-{color=[bad_summary]}You disclosed your wealth, and as such, your potential, to the scammer.{/color}"
+
+    businessman "Very well."
+
+    narrator "He scribbles something on his notepad."
+
+    jump door_scam_1_final
+
+
+label door_scam_1_lie2:
+
+    narrator "You answer very vaguely, saying that your son takes care of your possessions."
+
+    $ summary_text += "\n{size=*0.3}\n{/size}-{color=[good_summary]}You didn't disclose your wealth to the scammer.{/color}"
+
+    businessman "Very well."
+
+    narrator "He scribbles something on his notepad."
+
+    jump door_scam_1_final
+
+        
+label door_scam_1_final:
+
+    businessman "Alright, that's everything."
+
+    businessman "Because we are going to manage your personal bank account to make good investments,..."
+
+    businessman "...we'd like to ask you your bank details or a delegation of authority to not bother you every time."
+
+    menu:
+        narrator "You..."
+
+        "Give him the details":
+            jump door_scam_1_meet_fail
+
+        "Refuse":
+            jump door_scam_1_meet_success
+
+
+label door_scam_1_meet_fail:
+
+    narrator "You give him the details on your bank access."
+    narrator "The man writes them down carefully."
+
+    $ summary_text += "\n{size=*0.3}\n{/size}-{color=[bad_summary]}You gave your bank details to the scammers.{/color}"
+
+    businessman "Thank you very much, it was a pleasure doing business with you."
+    businessman "Have a nice day!"
+
+    hide salesman
+    with dissolve
+
+    scene bg living_room
+    with dissolve
+
+    narrator "You return to your trusty living room."
+
+    $ money_show_diff = True
+    $ money_diff = 11000
+    $ money -= money_diff
+    $ money_remove = True
+
+    narrator "A few days later, your bank informs you that large amounts of money have been transferred from your account."
+    narrator "You never hear from \"A better choice\" or Jan Van Holt ever again."
+
+    $ money_show_diff = False
+
+    scene bg living_room_guide
+    with dissolve
+
+    guide "Oh no! You've been scammed."
+    guide "Never give personal details without looking for the company online or asking someone close to do so, even if it seems legitimate."
+    guide "Crooks like these target older people who don't have immediate family to look after them."
+    guide "They trick you into giving them your bank details and drain your account."
+    guide "If you've been scammed, immediately contact your bank directly, or a financial counselor."
+    guide "Also report the scam, even if you didn't lose anything."
+
+    jump scam_end
+
+
+label door_scam_1_meet_success:
+
+    narrator "You refuse to give him your bank details."
+
+    $ summary_text += "\n{size=*0.3}\n{/size}-{color=[good_summary]}Despite the pressure, you didn't give in to their demands and didn't disclose your bank details.{/color}"
+
+    businessman "No but you have to understand that we're just trying to help you!"
+
+    hide salesman
+    with dissolve
+
+    if(meet_at_home):
+        narrator "You tell the man off and shut the door."
+    else:
+        narrator "You leave quickly and return to your trusty living room."
+
+    scene bg living_room
+    with dissolve
+
+    narrator "During the following week, they try to contact you again and again to get you to give them your details."
+    narrator "You block them and report them for harassment."
+
+    scene bg living_room_guide
+    with dissolve
+
+    guide "Well done on spotting the scam!"
+    guide "Never give personal details without looking for the company online or asking someone close to do so, even if it seems legitimate."
+    guide "Crooks like these target older people who don't have immediate family to look after them."
+    guide "They trick you into giving them your bank details and drain your account."
+    guide "If you've been scammed, immediately contact your bank directly, or a financial counselor."
+    guide "Also report the scam, even if you didn't lose anything."
+
+    jump scam_end
 
 
 label scam_end:
